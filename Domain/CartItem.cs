@@ -4,13 +4,13 @@ public class CartItem
 {
     public Guid Id { get; init; } = Guid.NewGuid();
 
-    public long ProductId { get; init; }
-    public string ProductName { get; init; } = string.Empty;
+    public long ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
 
-    public decimal BasePrice { get; init; }
+    public decimal BasePrice { get; set; }
     public int Quantity { get; private set; }
 
-    public List<CartItemGroupSelection> SelectedGroups { get; init; } = new();
+    public List<CartItemGroupSelection> SelectedGroups { get; set; } = new();
 
     public CartItem(long productId, string productName, decimal basePrice, int quantity)
     {

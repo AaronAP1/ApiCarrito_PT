@@ -74,5 +74,73 @@ public sealed class CartService
         return (cartItem, new List<ValidationError>(), statusCode: 201);
     }
 
+    public (CartItem? item, List<ValidationError> errors, int statusCode) UpdateItem(Guid itemId, UpdateCartItemRequest request)
+    {
+        var cart = _cartRepo.Get();
+        var existing = cart.FindItem(itemId);
+
+        if (existing is null)
+        {
+            return (null,
+                new List<ValidationError> { new() { Code = "ITEM_NOT_FOUND", Message = $"ItemId '{itemId}' not found." } },
+                statusCode: 404);
+        }
+
+        var catalog = _catalogProvider.GetById(existing.ProductId);
+        if (catalog is null)
+        {
+            return (null,
+                new List<ValidationError> { new() { Code = "PRODUCT_NOT_FOUND", Message = $"ProductId '{existing.ProductId}' not found." } },
+                statusCode: 404);
+        }
+
+        // Convertimos UpdateRequest -> AddCartItemRequest para reutilizar el validador y el price calculator
+        var validationRequest = new AddCartItemRequest
+        {
+            ProductId = existing.ProductId,
+            Quantity = request.Quantity,
+            Groups = request.Groups
+        };
+
+        var errors = _validator.Validate(validationRequest, catalog);
+        if (errors.Count > 0)
+            return (null, errors, statusCode: 422);
+
+        var unitPrice = _priceCalculator.CalculateUnitPrice(validationRequest, catalog);
+
+        existing.SetQuantity(request.Quantity);
+        existing.BasePrice = unitPrice; // ⬅️ OJO: si tu BasePrice es init; cambia a set; (te explico abajo)
+
+        existing.SelectedGroups = request.Groups.Select(g => new CartItemGroupSelection
+        {
+            GroupAttributeId = g.GroupAttributeId,
+            Selections = g.Selections.Select(s => new CartItemAttributeSelection
+            {
+                AttributeId = s.AttributeId,
+                Quantity = s.Quantity
+            }).ToList()
+        }).ToList();
+
+        _cartRepo.Save(cart);
+
+        return (existing, new List<ValidationError>(), statusCode: 200);
+    }
+
+    public (bool deleted, List<ValidationError> errors, int statusCode) DeleteItem(Guid itemId)
+    {
+        var cart = _cartRepo.Get();
+
+        var ok = cart.RemoveItem(itemId);
+        if (!ok)
+        {
+            return (false,
+                new List<ValidationError> { new() { Code = "ITEM_NOT_FOUND", Message = $"ItemId '{itemId}' not found." } },
+                statusCode: 404);
+        }
+
+        _cartRepo.Save(cart);
+        return (true, new List<ValidationError>(), statusCode: 204);
+    }
     public Cart GetCart() => _cartRepo.Get();
+
 }
