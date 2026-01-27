@@ -1,4 +1,7 @@
+using ApiCarrito_PT.Application.Pricing;
+using ApiCarrito_PT.Application.Services;
 using ApiCarrito_PT.Application.Validation;
+using ApiCarrito_PT.Infrastructure.Persistence;
 using ApiCarrito_PT.Infrastructure.Catalog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +16,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IProductCatalogProvider, InMemoryProductCatalogProvider>();
 builder.Services.AddSingleton<ProductSelectionValidator>();
+builder.Services.AddSingleton<PriceCalculator>();
+builder.Services.AddSingleton<ICartRepository, InMemoryCartRepository>();
+builder.Services.AddSingleton<CartService>();
 
 
 var app = builder.Build();
