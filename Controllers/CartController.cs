@@ -74,4 +74,42 @@ public sealed class CartController : ControllerBase
 
         return Created($"/cart/items/{response.ItemId}", response);
     }
+
+    // PUT /cart/items/{itemId}
+    [HttpPut("items/{itemId:guid}")]
+    public IActionResult UpdateItem([FromRoute] Guid itemId, [FromBody] UpdateCartItemRequest request)
+    {
+        var (item, errors, statusCode) = _cartService.UpdateItem(itemId, request);
+
+        if (statusCode == 404)
+            return NotFound(new { errors });
+
+        if (statusCode == 422)
+            return UnprocessableEntity(new { errors });
+
+        var response = new AddCartItemResponse
+        {
+            ItemId = item!.Id,
+            ProductId = item.ProductId,
+            ProductName = item.ProductName,
+            Quantity = item.Quantity,
+            UnitPrice = item.BasePrice,
+            LineTotal = item.BasePrice * item.Quantity
+        };
+
+        return Ok(response);
+    }
+
+    // DELETE /cart/items/{itemId}
+    [HttpDelete("items/{itemId:guid}")]
+    public IActionResult DeleteItem([FromRoute] Guid itemId)
+    {
+        var (deleted, errors, statusCode) = _cartService.DeleteItem(itemId);
+
+        if (statusCode == 404)
+            return NotFound(new { errors });
+
+        return NoContent(); // 204
+    }
+
 }
