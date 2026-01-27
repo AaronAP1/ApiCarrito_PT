@@ -2,7 +2,7 @@
 using ApiCarrito_PT.Application.Pricing;
 using ApiCarrito_PT.Application.Validation;
 using ApiCarrito_PT.Domain;
-using ApiCarrito_PT.Infrastructure.Cart;
+using ApiCarrito_PT.Infrastructure.Persistence;
 using ApiCarrito_PT.Infrastructure.Catalog;
 
 namespace ApiCarrito_PT.Application.Services;
