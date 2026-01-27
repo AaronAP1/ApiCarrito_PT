@@ -80,7 +80,7 @@ public sealed class ProductSelectionValidator
                     Path = $"groups[{gIndex}].selections"
                 });
 
-            // Validar cada selección exista y qty esté bien
+            // Validar cada selección exista y que esté bien
             int groupSelectedTotal = 0;
 
             for (int sIndex = 0; sIndex < groupReq.Selections.Count; sIndex++)
@@ -159,7 +159,7 @@ public sealed class ProductSelectionValidator
             }
         }
 
-        // --- Validar grupos obligatorios (los EQUAL_THAN típicamente son obligatorios en esta prueba)
+        // --- Validar grupos obligatorios
         // Si el catálogo tiene grupos con EQUAL_THAN, deben venir en el request.
         var requiredGroups = catalog.GroupAttributes
             .Where(g => g.QuantityInformation.VerifyValue == "EQUAL_THAN")

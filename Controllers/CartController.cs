@@ -21,7 +21,7 @@ public sealed class CartController : ControllerBase
     {
         var cart = _cartService.GetCart();
 
-        // Respuesta simple (para la prueba): devuelve items con lo esencial
+        // Respuesta simple, devuelve items con lo esencial
         var result = new
         {
             cart.Id,
