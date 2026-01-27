@@ -1,0 +1,6 @@
+@ApiCarrito_PT_HostAddress = http://localhost:5186
+
+GET {{ApiCarrito_PT_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
