@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../ApiCarrito_PT.Test/ApiCarrito_PT.Test.csproj" Id="00929dd4-41aa-44a0-8681-08a007248c8b" />
   <Project Path="ApiCarrito_PT.csproj" />
 </Solution>
